@@ -62,7 +62,15 @@ export function UseTasks() {
         try {
             const response = await api.get('/v1/Task', {
                 headers: { Authorization: `Bearer ${token}` },
-                params: query
+                params: {
+                ...query,
+                createAtBefore: query.createAtBefore 
+                    ? query.createAtBefore.toISOString().split("T")[0] 
+                    : undefined,
+                createAtAfter: query.createAtAfter 
+                    ? query.createAtAfter.toISOString().split("T")[0] 
+                    : undefined,
+                }
             })
 
             if (response.status === 200) {
@@ -228,6 +236,18 @@ export function UseTasks() {
         }
     }
 
+    function clearInputsQuery() {
+        const queryCopy = {
+            ...query,
+            Title: undefined,
+            createAtAfter: undefined,
+            Done: undefined,
+            createAtBefore: undefined,
+        }
+
+        setQuery(queryCopy)
+    }
+
     function updateTask(id: string) {
         if (!id || id.length === 0) {
             showAlert(
@@ -242,6 +262,25 @@ export function UseTasks() {
         router.replace('/tasks/update/'+id)
         return
     }
+
+    function nextPage() {
+        if ((query.pageNumber || 1) < (tasks?.totalPages || 1)) {
+            setQuery(prevQuery => ({
+                ...prevQuery,
+                pageNumber: (prevQuery.pageNumber || 1) + 1,
+            }));
+        }
+    }
+
+    function backPage() {
+        if ((query.pageNumber || 1) > 1) {
+            setQuery(prevQuery => ({
+                ...prevQuery,
+                pageNumber: Math.max(1, (prevQuery.pageNumber || 1) - 1),
+            }));
+        }
+    }
+
 
     async function logout() {
         const token: string | null = localStorageService.getToken()
@@ -336,6 +375,9 @@ export function UseTasks() {
         query,
         setQuery,
         logout,
-        updateTask
+        updateTask,
+        clearInputsQuery,
+        nextPage,
+        backPage
     }
 }
