@@ -55,6 +55,7 @@ export default function UseLogin() {
                 localStorageService.setTokens(data.body)
 
                 router.push("/tasks")
+                return
             }
 
         } catch(e: any) {
