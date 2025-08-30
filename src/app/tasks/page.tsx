@@ -80,18 +80,18 @@ export default function Tasks() {
                                                         <div className={"flex flex-col space-y-3"} >
                                                             <Btn 
                                                                 padding={"p-3"} 
-                                                                border={"border-black"} 
+                                                                border={"border-white"} 
                                                                 fn={() => deleteTask(e.id)} 
-                                                                hover={"hover:bg-white"} 
-                                                                text={"text-black"}   
-                                                                icon={ <MdDelete /> }                                                
+                                                                hover={"hover:bg-red-500"} 
+                                                                text={"text-white"}   
+                                                                icon={ <MdDelete /> }                      
                                                             />
                                                             <Btn 
                                                                 padding={"p-3"} 
-                                                                border={"border-black"} 
+                                                                border={"border-white"} 
                                                                 fn={() => {}} 
                                                                 hover={"hover:bg-white"} 
-                                                                text={"text-black"}   
+                                                                text={"text-white"}   
                                                                 icon={ <TfiReload /> }                                                
                                                             />
                                                         </div>   
