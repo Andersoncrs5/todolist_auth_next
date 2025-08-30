@@ -12,11 +12,29 @@ import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
+interface IQuery {
+    pageNumber: number | undefined
+    pageSize: number | undefined
+    Title: string | undefined
+    Done: boolean | undefined
+    createAtBefore: Date | undefined
+    createAtAfter: Date | undefined
+}
+
 export function UseTasks() {
     const timeMsg = 5000
     const router = useRouter()
     const localStorageService = new LocalStorageService()
     
+    const [query, setQuery] = useState<IQuery>({
+        createAtAfter: undefined,
+        createAtBefore: undefined,
+        Done: undefined,
+        pageNumber: 1,
+        pageSize: 10,
+        Title: undefined,
+    })
+
     const [isSearch, setIsSearch] = useState<boolean>(false)
     const [tasks, setTasks] = useState<Page<TaskModel[]>>()
 
@@ -29,8 +47,7 @@ export function UseTasks() {
 
     useEffect(() => {
         getTasks()
-    }, [])
-
+    }, [query])
 
     async function getTasks() {
         setIsSearch(true)
@@ -44,7 +61,8 @@ export function UseTasks() {
 
         try {
             const response = await api.get('/v1/Task', {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
+                params: query
             })
 
             if (response.status === 200) {
@@ -144,10 +162,20 @@ export function UseTasks() {
     }
 
     async function changeStatus(id: string) {
+        if (!id) {
+            showAlert(
+                "bg-transparent",
+                "text-green-500",
+                "border-green-500",
+                "Error the chanege status task!"
+            )
+            return 
+        }
+
         const token: string | null = localStorageService.getToken()
 
         try {
-            const response = await api.delete("/v1/Task/"+id+"/status/done", {
+            const response = await api.get("/v1/Task/"+id+"/status/done", {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
@@ -170,6 +198,81 @@ export function UseTasks() {
 
             if (response.status === 400) {
                 const data = response.response?.data as ResponseBody<string>
+                showAlert(
+                    "bg-transparent",
+                    "text-yellow-500",
+                    "border-yellow-500",
+                    data.message
+                )
+            }
+
+            if (response.status === 404) {
+                const data = response.response?.data as ResponseBody<string>
+                showAlert(
+                    "bg-transparent",
+                    "text-yellow-500",
+                    "border-yellow-500",
+                    data.message
+                )
+            }
+
+            if (response.response?.status && response.response.status >= 500 &&  response.response.status <= 599) {
+                
+                showAlert(
+                    "bg-transparent", 
+                    "text-red-500", 
+                    "border-red-500",
+                    "Error the server please try again later"
+                )
+            }
+        }
+    }
+
+    function updateTask(id: string) {
+        if (!id || id.length === 0) {
+            showAlert(
+                "bg-transparent",
+                "text-green-500",
+                "border-green-500",
+                "Error the update task!"
+            )
+            return 
+        }
+
+        router.replace('/tasks/update/'+id)
+        return
+    }
+
+    async function logout() {
+        const token: string | null = localStorageService.getToken()
+
+        try {
+            const response = await api.get('/v1/Auth/revoke', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+
+            if (response.status === 200) {
+                const data = response.data as ResponseBody<string>
+
+                showAlert(
+                    "bg-transparent", 
+                    "text-green-500", 
+                    "border-green-500",
+                    data.message
+                )
+
+                localStorageService.clearAll()
+                router.replace('/')
+                return
+            }
+
+        } catch(e: any) {
+
+            const response = e as AxiosError
+
+            if (response.status === 401) {
+                const data = response.response?.data as ResponseBody<string>
+                
                 showAlert(
                     "bg-transparent",
                     "text-yellow-500",
@@ -229,6 +332,10 @@ export function UseTasks() {
         colorBorderAlert,
         deleteTask,
         getTasks,
-        changeStatus
+        changeStatus,
+        query,
+        setQuery,
+        logout,
+        updateTask
     }
 }
