@@ -143,6 +143,63 @@ export function UseTasks() {
         }
     }
 
+    async function changeStatus(id: string) {
+        const token: string | null = localStorageService.getToken()
+
+        try {
+            const response = await api.delete("/v1/Task/"+id+"/status/done", {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+
+            if (response.status === 200) {
+                const data = response.data as ResponseBody<string>
+
+                showAlert(
+                    "bg-transparent",
+                    "text-green-500",
+                    "border-green-500",
+                    data.message
+                )
+
+                getTasks()
+            }
+
+        } catch(e: any) {
+
+            const response = e as AxiosError
+
+            if (response.status === 400) {
+                const data = response.response?.data as ResponseBody<string>
+                showAlert(
+                    "bg-transparent",
+                    "text-yellow-500",
+                    "border-yellow-500",
+                    data.message
+                )
+            }
+
+            if (response.status === 404) {
+                const data = response.response?.data as ResponseBody<string>
+                showAlert(
+                    "bg-transparent",
+                    "text-yellow-500",
+                    "border-yellow-500",
+                    data.message
+                )
+            }
+
+            if (response.response?.status && response.response.status >= 500 &&  response.response.status <= 599) {
+                
+                showAlert(
+                    "bg-transparent", 
+                    "text-red-500", 
+                    "border-red-500",
+                    "Error the server please try again later"
+                )
+            }
+        }
+    }
+
     function showAlert(
         bg: BgStyleType,
         text: TextStyleType,
@@ -171,6 +228,7 @@ export function UseTasks() {
         colorTextAlert,
         colorBorderAlert,
         deleteTask,
-        getTasks
+        getTasks,
+        changeStatus
     }
 }
