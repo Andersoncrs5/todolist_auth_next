@@ -26,4 +26,9 @@ export default class LocalStorageService {
         return localStorage.getItem(this._refreshToken)
     }
 
+    clearAll() {
+        localStorage.removeItem(this._refreshToken)
+        localStorage.removeItem(this._token)
+    }
+
 }
