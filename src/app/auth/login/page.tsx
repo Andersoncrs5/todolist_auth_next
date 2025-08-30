@@ -70,7 +70,7 @@ export default function Login() {
                                         bgColor="bg-blue-500"
                                     />
                                 </div>
-                                <div className="mt-2" >
+                                <div className="mt-1" >
                                     <BtnUrl 
                                         border={"border-white"}
                                         hoverBg={"hover:bg-transparent"}
