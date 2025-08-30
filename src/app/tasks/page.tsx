@@ -21,7 +21,8 @@ export default function Tasks() {
         isSearch,
         msg,
         tasks,
-        deleteTask
+        deleteTask,
+        changeStatus
     } = UseTasks()
 
     return (
@@ -89,7 +90,7 @@ export default function Tasks() {
                                                             <Btn 
                                                                 padding={"p-3"} 
                                                                 border={"border-white"} 
-                                                                fn={() => {}} 
+                                                                fn={() => changeStatus(e.id)} 
                                                                 hover={"hover:bg-white"} 
                                                                 text={"text-white"}   
                                                                 icon={ <TfiReload /> }                                                
