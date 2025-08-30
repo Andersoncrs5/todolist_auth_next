@@ -52,6 +52,7 @@ export default function UseLogin() {
                     data.message
                 )
 
+                clearInputs()
                 localStorageService.setTokens(data.body)
 
                 router.push("/tasks")
@@ -69,8 +70,6 @@ export default function UseLogin() {
                     "border-yellow-500",
                     data.body
                 )
-
-                router.push("/tasks/")
             }
 
             if (err.response?.status === 401) {
@@ -94,7 +93,6 @@ export default function UseLogin() {
             }
 
         } finally {
-            clearInputs()
             setIsSubmitting(false)
         }
     }
