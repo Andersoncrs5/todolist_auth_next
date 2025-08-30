@@ -13,6 +13,7 @@ interface Props {
     disabled?: boolean
     hover: HoverBgStyleType
     text: TextStyleType
+    more?: string
 }
 
 export default function Btn({ 
@@ -24,19 +25,23 @@ export default function Btn({
     disabled, 
     hover,
     border,
-    text
+    text,
+    more
 }: Props) {
     return (
         <button
             className={`
                 bg-transparent border ${border}
                 ${padding} rounded ${text} ${hover}
-                hover:text-black ${margin}
+                hover:text-black ${margin} ${more}
+                flex items-center justify-center gap-2
             `}
             onClick={fn}
             disabled={disabled}
         >
-            {icon} {title}
+            {icon && <span>{icon}</span>}
+            {title}
         </button>
+
     )
 }
