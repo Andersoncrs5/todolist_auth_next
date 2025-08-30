@@ -85,14 +85,14 @@ export default function Register() {
                                 </div>
                                 <div className="mt-2" >
                                     <BtnUrl 
-                                        border={"border-white"} 
-                                        hoverBg={"hover:bg-transparent"} 
-                                        text={"text-white"} 
+                                        border={"border-white"}
+                                        hoverBg={"hover:bg-transparent"}
+                                        text={"text-white"}
                                         name={"BACK"}
-                                        bgColor={"bg-blue-500"} 
+                                        bgColor={"bg-blue-500"}
 
-                                        url={"/"} 
-                                        pdd={"p-1"} 
+                                        url={"/"}
+                                        pdd={"p-1"}
                                         hoverText={"hover:text-white"}
                                     />
                                 </div>

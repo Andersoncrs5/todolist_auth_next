@@ -19,7 +19,7 @@ interface Props {
   pdd: PaddingStyleType
   hoverText: HoverTextStyleType
   icon?: ReactNode
-  w: string
+  w?: string
 }
 
 export default function BtnUrl({
