@@ -11,6 +11,9 @@ import { MdDelete, MdSystemUpdateAlt } from "react-icons/md"
 import { TfiReload } from "react-icons/tfi"
 import ShowAlert from "@/components/showAlert/showAlert.component"
 import CustomInput from "@/components/customInput/customInput.component"
+import { CgProfile } from "react-icons/cg"
+import Pagination from "@/components/pagination/Pagination.component"
+import Page from "@/util/res/page.res"
 
 export default function Tasks() {
 
@@ -27,12 +30,16 @@ export default function Tasks() {
         query,
         setQuery,
         logout,
-        updateTask
+        updateTask,
+        clearInputsQuery,
+        backPage,
+        getTasks,
+        nextPage
     } = UseTasks()
 
     return (
         <>
-            {alert && <ShowAlert msg={msg} bgStyle={bgColorAlert} textStyle={colorTextAlert} border={colorBorderAlert} /> }
+            {alert && <ShowAlert msg={msg} bgStyle={bgColorAlert} textStyle={colorTextAlert} border={colorBorderAlert} />}
 
             <div className={"flex flex-col w-screen h-screen"} >
                 <div className="border border-white h-15 ">
@@ -45,31 +52,44 @@ export default function Tasks() {
                         </div>
                         <div className={"basis-2/10 text-center flex flex-row justify-center  space-x-1"} >
                             <div>
-                                <BtnUrl 
-                                    border={"border-white"} 
-                                    hoverBg={"hover:bg-white"} 
-                                    text={"text-white"} 
-                                    bgColor={"bg-transparent"} 
-                                    url={"/tasks/create"} 
-                                    pdd={"p-3"} 
-                                    hoverText={"hover:text-black"}      
-                                    icon={ <IoMdCreate /> }
+                                <BtnUrl
+                                    border={"border-white"}
+                                    hoverBg={"hover:bg-white"}
+                                    text={"text-white"}
+                                    bgColor={"bg-transparent"}
+                                    url={"/tasks/create"}
+                                    pdd={"p-3"}
+                                    hoverText={"hover:text-black"}
+                                    icon={<IoMdCreate />}
+                                    margin="mt-1"
+                                />
+
+                            </div>
+                            <div>
+                                <Btn
+                                    padding={"p-3"}
+                                    border={"border-white"}
+                                    fn={() => logout()}
+                                    hover={"hover:bg-white"}
+                                    text={"text-white"}
+                                    icon={<IoIosLogOut />}
                                     margin="mt-1"
                                 />
                             </div>
                             <div>
-                                <Btn 
-                                    padding={"p-3"} 
-                                    border={"border-white"} 
-                                    fn={() => logout()} 
-                                    hover={"hover:bg-white"} 
-                                    text={"text-white"}  
-                                    icon={ <IoIosLogOut /> } 
-                                    margin="mt-1"                
+                                <BtnUrl
+                                    border={"border-white"}
+                                    hoverBg={"hover:bg-white"}
+                                    text={"text-white"}
+                                    bgColor={"bg-transparent"}
+                                    url={"/user/profile"}
+                                    pdd={"p-3"}
+                                    icon={<CgProfile />}
+                                    hoverText={"hover:text-black"}
+                                    margin="mt-1"
                                 />
                             </div>
-                            
-                            
+
                         </div>
                     </div>
                 </div>
@@ -77,11 +97,11 @@ export default function Tasks() {
                     <div className="border border-white basis-2/10 flex flex-col">
                         <form className="m-4 flex flex-col space-y-2" >
                             <div>
-                                <CustomInput 
-                                    value={query.Title || ''} 
-                                    onChange={(e) => setQuery(prevQuery => ({ ...prevQuery, Title: e.target.value })) } 
-                                    type={"text"} 
-                                    padding={"p-1.5"}    
+                                <CustomInput
+                                    value={query.Title || ''}
+                                    onChange={(e) => setQuery(prevQuery => ({ ...prevQuery, Title: e.target.value }))}
+                                    type={"text"}
+                                    padding={"p-1.5"}
                                     border={"border-white"}
                                     nameLabel={"Title"}
                                     textColor={"text-white"}
@@ -92,14 +112,14 @@ export default function Tasks() {
                                 <select
                                     className="border text-white rounded p-2 border border-white w-[100%]"
                                     value={
-                                    query.Done === undefined ? "none" : query.Done ? "true" : "false"
+                                        query.Done === undefined ? "none" : query.Done ? "true" : "false"
                                     }
                                     onChange={(e) => {
-                                    const value = e.target.value;
-                                    setQuery((prev) => ({
-                                        ...prev,
-                                        Done: value === "none" ? undefined : value === "true",
-                                    }));
+                                        const value = e.target.value;
+                                        setQuery((prev) => ({
+                                            ...prev,
+                                            Done: value === "none" ? undefined : value === "true",
+                                        }));
                                     }}
                                 >
                                     <option className="text-black bg-blue-500 " value="none">NONE</option>
@@ -107,68 +127,140 @@ export default function Tasks() {
                                     <option className="text-black bg-blue-500 " value="false">FALSE</option>
                                 </select>
                             </div>
-
+                            {/* 
+                                <div>
+                                    <CustomInput
+                                        value={query.createAtBefore ? query.createAtBefore.toISOString().split("T")[0] : ""}
+                                        onChange={(e) => setQuery(prevQuery => ({
+                                            ...prevQuery,
+                                            createAtBefore: e.target.value ? new Date(e.target.value) : undefined
+                                        }))}
+                                        type={"date"}
+                                        padding={"p-1.5"}
+                                        border={"border-white"}
+                                        nameLabel={"Created At Before"}
+                                        textColor={"text-white"}
+                                    />
+                                </div>
+                                <div>
+                                    <CustomInput
+                                        value={query.createAtAfter ? query.createAtAfter.toISOString().split("T")[0] : ""}
+                                        onChange={(e) => setQuery(prevQuery => ({
+                                            ...prevQuery,
+                                            createAtAfter: e.target.value ? new Date(e.target.value) : undefined
+                                        }))}
+                                        type={"date"}
+                                        padding={"p-1.5"}
+                                        border={"border-white"}
+                                        nameLabel={"Created At After"}
+                                        textColor={"text-white"}
+                                    />
+                                </div> 
+                            */}
+                            <div>
+                                <CustomInput
+                                    value={query.pageNumber?.toString() || '1'}
+                                    onChange={(e) => setQuery(prevQuery => ({
+                                        ...prevQuery,
+                                        pageNumber: e.target.value ? parseInt(e.target.value) : undefined
+                                    }))}
+                                    type="number"
+                                    padding="p-1.5"
+                                    border="border-white"
+                                    nameLabel="Page Number"
+                                    textColor="text-white"
+                                />
+                            </div>
+                            <div>
+                                <CustomInput
+                                    value={query.pageSize?.toString() || '10'}
+                                    onChange={(e) => setQuery(prevQuery => ({
+                                        ...prevQuery,
+                                        pageSize: e.target.value ? parseInt(e.target.value) : undefined
+                                    }))}
+                                    type="number"
+                                    padding="p-1.5"
+                                    border="border-white"
+                                    nameLabel="Page Number"
+                                    textColor="text-white"
+                                />
+                            </div>
                         </form>
                     </div>
-                    <div className="border border-white basis-8/10 ">
-                        <div className="flex items-center justify-center mt-3">
+                    <div className=" basis-8/10 ">
+                        <div className="flex items-center justify-center mt-3 ">
 
-                            {isSearch? 
+                            {isSearch ?
                                 (
-                                    
+
                                     <div className="flex justify-center items-center min-h-screen">
                                         <div className="loader"></div>
                                     </div>
                                 )
                                 :
                                 (
-                                    <div className="flex flex-col w-[95%]">
-                                        {tasks?.items.map((e: TaskModel) => {
-                                            return (
-                                                <ShowTask task={e} key={e.id}>
-                                                    <ActionMenu 
-                                                        textColor={"text-white"} 
-                                                        hoverTextColor={"hover:text-green-500"} 
-                                                        bgSyle={"bg-transparent"} 
-                                                        borderStyle={"border-purple-500"}>
+                                    tasks?.items && tasks?.items.length > 0 ? (
+                                        <div className="w-[95%]" >
+                                            <div className="flex flex-col w-[100%]">
+                                                {tasks?.items.map((e: TaskModel) => {
+                                                    return (
+                                                        <ShowTask task={e} key={e.id}>
+                                                            <ActionMenu
+                                                                textColor={"text-white"}
+                                                                hoverTextColor={"hover:text-green-500"}
+                                                                bgSyle={"bg-transparent"}
+                                                                borderStyle={"border-purple-500"}>
 
-                                                        <div className={"flex flex-col space-y-3"} >
-                                                            <Btn 
-                                                                padding={"p-3"} 
-                                                                border={"border-white"} 
-                                                                fn={() => deleteTask(e.id)} 
-                                                                hover={"hover:bg-red-500"} 
-                                                                text={"text-white"}   
-                                                                icon={ <MdDelete /> }                      
-                                                            />
-                                                            <Btn 
-                                                                padding={"p-3"} 
-                                                                border={"border-white"} 
-                                                                fn={() => changeStatus(e.id)} 
-                                                                hover={"hover:bg-white"} 
-                                                                text={"text-white"}   
-                                                                icon={ <TfiReload /> } 
-                                                                disabled={false}                                               
-                                                            />
-                                                            <Btn 
-                                                                padding={"p-3"} 
-                                                                border={"border-white"} 
-                                                                fn={() => updateTask(e.id)} 
-                                                                hover={"hover:bg-white"} 
-                                                                text={"text-white"}   
-                                                                icon={ <MdSystemUpdateAlt /> } 
-                                                                disabled={false}                                               
-                                                            />
-                                                        </div>   
-                                                    </ActionMenu>
-                                                </ShowTask>
-                                            )
-                                        })}
-                                    </div>
+                                                                <div className={"flex flex-col space-y-3"} >
+                                                                    <Btn
+                                                                        padding={"p-3"}
+                                                                        border={"border-white"}
+                                                                        fn={() => deleteTask(e.id)}
+                                                                        hover={"hover:bg-red-500"}
+                                                                        text={"text-white"}
+                                                                        icon={<MdDelete />}
+                                                                    />
+                                                                    <Btn
+                                                                        padding={"p-3"}
+                                                                        border={"border-white"}
+                                                                        fn={() => changeStatus(e.id)}
+                                                                        hover={"hover:bg-white"}
+                                                                        text={"text-white"}
+                                                                        icon={<TfiReload />}
+                                                                        disabled={false}
+                                                                    />
+                                                                    <Btn
+                                                                        padding={"p-3"}
+                                                                        border={"border-white"}
+                                                                        fn={() => updateTask(e.id)}
+                                                                        hover={"hover:bg-white"}
+                                                                        text={"text-white"}
+                                                                        icon={<MdSystemUpdateAlt />}
+                                                                        disabled={false}
+                                                                    />
+                                                                </div>
+                                                            </ActionMenu>
+                                                        </ShowTask>
+                                                    )
+                                                })}
+                                            </div>
+                                            <div className="" >
+                                                <Pagination
+                                                    backPage={backPage}
+                                                    nextPage={nextPage}
+                                                    tasks={tasks}
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex justify-center items-center min-h-screen">
+                                            <h1 className="text-white" >NO TASKS</h1>
+                                        </div>
+                                    )
                                 )
                             }
 
-                            
+
                         </div>
                     </div>
                 </div>
