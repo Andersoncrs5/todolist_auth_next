@@ -27,7 +27,7 @@ export default function BtnSubmit({
             <button 
                 type="submit"
                 disabled={isSubmitting}
-                className={`flex items-center gap-2 ${bgColor} border ${border} ${hoverBgColor} text px-2 py-1 rounded 
+                className={`flex items-center gap-2 ${bgColor} border ${border} ${hoverBgColor} ${text} px-2 py-1 rounded 
                 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ' hover:bg-green-500 hover:border'}`}
             >
                 {isSubmitting ? (
