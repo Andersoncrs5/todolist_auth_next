@@ -9,6 +9,7 @@ type InputType =
   | 'time'
   | 'url'
   | 'date'
+  | 'number'
 
 interface CustomInputProps {
   value: string;
